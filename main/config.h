@@ -7,7 +7,8 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#include <stddef.h> // NULL
+#include <stddef.h>
+#include <stdbool.h>
 
 /* ============================================================================
  * Firmware Version Safeguard (Chống lỗi undefined trong main.c)
@@ -37,11 +38,26 @@
  * ============================================================================ */
 #define MQTT_BROKER_URI "mqtt://10.68.68.26:1883"
 
-// Mosquitto trên C4 đã bật allow_anonymous true nên để NULL
-#define MQTT_USERNAME NULL
-#define MQTT_PASSWORD NULL
+// Đổi NULL thành chuỗi rỗng "" để tránh lỗi strncpy non-null của GCC
+#define MQTT_USERNAME ""
+#define MQTT_PASSWORD ""
 
 #define MQTT_CLIENT_ID "esp32p4_voice_assistant"
+
+/* ============================================================================
+ * Audio & Voice Processing Flags (Bổ sung cho oled_status.c)
+ * ============================================================================ */
+#ifndef VAD_ENABLED
+#define VAD_ENABLED true
+#endif
+
+#ifndef ENABLE_AEC
+#define ENABLE_AEC true
+#endif
+
+#ifndef ENABLE_AGC
+#define ENABLE_AGC true
+#endif
 
 /* ============================================================================
  * Output Volume
