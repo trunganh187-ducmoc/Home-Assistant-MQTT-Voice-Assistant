@@ -1,0 +1,42 @@
+name: Build ESP32-P4 Firmware
+
+on:
+  push:
+    branches: [ master, main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: espressif/idf:release-v5.5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Build Firmware
+        shell: bash
+        run: |
+          . $IDF_PATH/export.sh
+          idf.py set-target esp32p4
+          idf.py build
+
+      - name: Extract Flash Arguments
+        shell: bash
+        run: |
+          echo "=== THÔNG SỐ OFFSET NẠP FLASH TOOL ==="
+          cat build/flasher_args.json
+
+      - name: Upload Binary Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ESP32-P4-Voice-Assistant-Binaries
+          path: |
+            build/bootloader/bootloader.bin
+            build/partition_table/partition-table.bin
+            build/esp32_p4_voice_assistant.bin
+            build/srmodels/srmodels.bin
+            build/flasher_args.json
