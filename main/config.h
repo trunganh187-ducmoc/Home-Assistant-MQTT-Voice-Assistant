@@ -12,3 +12,6 @@
 #define MQTT_CLIENT_ID        "esp32p4_voice_assistant"
 
 #define DEFAULT_OUTPUT_VOLUME 80
+#ifndef FIRMWARE_VERSION
+#define FIRMWARE_VERSION      "1.0.0"
+#endif
