@@ -17,26 +17,29 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Build Firmware
+      - name: Build Firmware (Preserve Original sdkconfig)
         shell: bash
         run: |
           . $IDF_PATH/export.sh
-          idf.py set-target esp32p4
-          idf.py build
+          # Tuyệt đối không chạy idf.py set-target để bảo toàn sdkconfig 105KB gốc
+          python build.py
 
-      - name: Extract Flash Arguments
+      - name: Merge All 5 Partitions into Single Binary
         shell: bash
         run: |
-          echo "=== THÔNG SỐ OFFSET NẠP FLASH TOOL ==="
-          cat build/flasher_args.json
+          . $IDF_PATH/export.sh
+          cd build
+          esptool.py --chip esp32p4 merge_bin -o merged_firmware_0x0.bin @flash_args
 
       - name: Upload Binary Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ESP32-P4-Voice-Assistant-Binaries
           path: |
+            build/merged_firmware_0x0.bin
             build/bootloader/bootloader.bin
             build/partition_table/partition-table.bin
+            build/ota_data_initial.bin
             build/esp32_p4_voice_assistant.bin
             build/srmodels/srmodels.bin
             build/flasher_args.json
