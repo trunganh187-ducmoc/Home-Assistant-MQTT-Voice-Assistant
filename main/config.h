@@ -29,7 +29,7 @@
  * ============================================================================ */
 #define HA_HOSTNAME "10.68.68.26"          // IP máy chủ Home Assistant
 #define HA_PORT 8123                       // Port mặc định của HA
-#define HA_TOKEN "placeholder_token"       // Cập nhật sau qua Web Dashboard/OTA
+#define HA_TOKEN "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIzNGQ0ZTI0NTI2YWQ0NTYyOTUzNDFjYzkwYjhlODVmYSIsImlhdCI6MTc5MjYzNjAxMCwiZXhwIjoyMTA3OTk2MDEwfQ.lGoDa5qPjjsBsm0dn2ASrpUCXPaMTl2Lgey5GjQKt4Q"       // Cập nhật sau qua Web Dashboard/OTA
 #define HA_USE_SSL false                   // Chạy HTTP nội bộ không dùng SSL
 #define HA_WEBSOCKET_PATH "/api/websocket"
 
