@@ -17,12 +17,28 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Build Firmware (Preserve Original sdkconfig)
+      - name: Configure Silicon Revision for ESP32-P4 ECO2 (Rev 1.0)
         shell: bash
         run: |
           . $IDF_PATH/export.sh
-          # Tuyệt đối không chạy idf.py set-target để bảo toàn sdkconfig 105KB gốc
-          python build.py
+          # 1. Xóa các cờ revision cũ trong sdkconfig để tránh xung đột
+          sed -i '/CONFIG_ESP32P4_REV_/d' sdkconfig
+          sed -i '/CONFIG_ESP32P4_SELECTS_REV_/d' sdkconfig
+          
+          # 2. Khóa cứng cấu hình phần cứng cho chip esp32p4-eco2 (Rev 1.0)
+          echo "CONFIG_ESP32P4_SELECTS_REV_LESS_V3=y" >> sdkconfig
+          echo "CONFIG_ESP32P4_REV_MIN_100=y" >> sdkconfig
+          echo "CONFIG_ESP32P4_REV_MIN_FULL=100" >> sdkconfig
+          
+          # 3. Đồng bộ lại sdkconfig mà vẫn bảo toàn 100% cấu hình 105KB gốc của dự án
+          idf.py reconfigure
+
+      - name: Build Firmware (Linux Native IDF)
+        shell: bash
+        run: |
+          . $IDF_PATH/export.sh
+          # Dùng idf.py build thay cho build.py để không bị lỗi gọi cmd.exe trên Linux
+          idf.py build
 
       - name: Merge All 5 Partitions into Single Binary
         shell: bash
@@ -30,8 +46,9 @@ jobs:
           . $IDF_PATH/export.sh
           cd build
           esptool.py --chip esp32p4 merge_bin -o merged_firmware_0x0.bin @flash_args
+          ls -lh merged_firmware_0x0.bin
 
-      - name: Upload Binary Artifacts
+      - name: Upload All Binary Artifacts (Full Set)
         uses: actions/upload-artifact@v4
         with:
           name: ESP32-P4-Voice-Assistant-Binaries
